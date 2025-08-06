@@ -231,6 +231,32 @@ MIT License - see LICENSE file.
 
 Miroslav Dvořák (mirecekd@gmail.com)
 
+## Usage Examples
+
+### N8N Workflow Integration
+
+This MCP server can be easily integrated with N8N workflows for automated AWS news processing and notifications.
+
+![AWS Blogs MCP in N8N](./assets/aws_blogs.png)
+
+The screenshot above shows a real-world N8N workflow where the AWS Blogs MCP server is used as a tool within an AI Agent. The workflow consists of:
+
+1. **Chat Trigger** - Receives user messages
+2. **AI Agent** - Processes requests using Azure OpenAI
+3. **AWS Blogs MCP Tool** - Fetches AWS articles based on user queries
+4. **Memory Buffer** - Maintains conversation context
+
+**Example N8N Workflow:** You can find a complete N8N workflow configuration in [./assets/n8n-workflow.json](./assets/n8n-workflow.json)
+
+**How it works in practice:**
+- User asks: "Show me latest AWS articles about Machine Learning"
+- AI Agent uses the MCP server to call `search_posts` with query "Machine Learning"
+- Server returns relevant AWS ML articles with titles, URLs, and summaries
+- AI Agent formats the response for the user with clickable links
+- Conversation context is maintained for follow-up questions
+
+This integration allows for natural language interactions with AWS content, making it easy to stay updated with the latest AWS developments through conversational AI.
+
 ## Inspiration
 
 Project inspired by [aws-news-mcp-server](https://github.com/jritsema/aws-news-mcp-server) by jritsema.
