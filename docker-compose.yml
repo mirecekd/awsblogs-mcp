@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  awsblogs-mcp-http:
+  awsblogs-mcp-sse:
     build:
       context: .
-      dockerfile: Dockerfile.http
-    container_name: awsblogs-mcp-server-http
+      dockerfile: Dockerfile.sse
+    container_name: awsblogs-mcp-server-sse
     ports:
       - "8807:8807"
     environment:

@@ -10,7 +10,7 @@ MCP server for working with AWS Blog and News articles from [api.aws-news.com](h
 
 ## Description
 
-This MCP server provides tools for retrieving and filtering AWS blog articles and news from all AWS categories. The server is built using the FastMCP framework and supports HTTP transport on port 8807.
+This MCP server provides tools for retrieving and filtering AWS blog articles and news from all AWS categories. The server is built using the FastMCP framework and supports SSE transport on port 8807.
 
 ## Available MCP Tools
 
@@ -147,12 +147,12 @@ The server supports filtering by these categories:
 
 3. **Run using docker-compose:**
    ```bash
-   docker-compose up awsblogs-mcp-http
+   docker-compose up awsblogs-mcp-sse
    ```
 
 4. **Or local Docker build:**
    ```bash
-   docker run -p 8807:8807 awsblogs-mcp-server:http
+   docker run -p 8807:8807 awsblogs-mcp-server:sse
    ```
 
 ### Local Development
@@ -164,7 +164,7 @@ The server supports filtering by these categories:
 
 2. **Run server:**
    ```bash
-   python main_http.py --host 0.0.0.0 --port 8807
+   python main_sse.py --host 0.0.0.0 --port 8807
    ```
 
 ## MCP Client Configuration
@@ -175,10 +175,8 @@ To use in an MCP client (e.g., Cline), add to configuration:
 {
   "mcpServers": {
     "awsblogs": {
-      "command": "docker",
-      "args": ["run", "-p", "8807:8807", "ghcr.io/mirecekd/awsblogs-mcp"],
-      "transport": "http",
-      "baseUrl": "http://localhost:8807"
+      "type": "sse",
+      "url": "http://localhost:8807/sse/"
     }
   }
 }
@@ -190,7 +188,7 @@ The server uses the public API: `https://api.aws-news.com/articles`
 
 ## Features
 
-- ✅ HTTP transport on port 8807
+- ✅ SSE transport on port 8807
 - ✅ Filter by article type (News/Blog)
 - ✅ Filter by category
 - ✅ Date filtering (date range, days back)
@@ -205,14 +203,14 @@ The server uses the public API: `https://api.aws-news.com/articles`
 awsblogs-mcp/
 ├── src/awsblogs_mcp_server/
 │   ├── __init__.py
-│   ├── server_http.py          # HTTP MCP server
-│   └── data_processor.py       # API client and data processing
-├── main_http.py               # HTTP entry point
-├── Dockerfile.http            # Docker image for HTTP
-├── docker-compose.yml         # Docker Compose configuration
-├── build.sh                   # Build script
-├── pyproject.toml             # Python project configuration
-└── README.md                  # This file
+│   ├── server_sse.py          # SSE MCP server
+│   └── data_processor.py      # API client and data processing
+├── main_sse.py               # SSE entry point
+├── Dockerfile.sse            # Docker image for SSE
+├── docker-compose.yml        # Docker Compose configuration
+├── build.sh                  # Build script
+├── pyproject.toml            # Python project configuration
+└── README.md                 # This file
 ```
 
 ## Development
@@ -221,7 +219,7 @@ For development we recommend:
 
 1. Fork the repository
 2. Create a new branch for the feature
-3. Test locally using `python main_http.py`
+3. Test locally using `python main_sse.py`
 4. Test Docker build using `./build.sh`
 5. Create a pull request
 

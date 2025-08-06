@@ -10,7 +10,7 @@ MCP server pro práci s AWS Blog a News články z [api.aws-news.com](https://ap
 
 ## Popis
 
-Tento MCP server poskytuje nástroje pro získávání a filtrování AWS blogových článků a news ze všech AWS kategorií. Server je vytvořen pomocí FastMCP frameworku a podporuje HTTP transport na portu 8807.
+Tento MCP server poskytuje nástroje pro získávání a filtrování AWS blogových článků a news ze všech AWS kategorií. Server je vytvořen pomocí FastMCP frameworku a podporuje SSE transport na portu 8807.
 
 ## Dostupné MCP nástroje
 
@@ -147,12 +147,12 @@ Server podporuje filtrování podle těchto kategorií:
 
 3. **Spuštění pomocí docker-compose:**
    ```bash
-   docker-compose up awsblogs-mcp-http
+   docker-compose up awsblogs-mcp-sse
    ```
 
 4. **Nebo lokální Docker build:**
    ```bash
-   docker run -p 8807:8807 awsblogs-mcp-server:http
+   docker run -p 8807:8807 awsblogs-mcp-server:sse
    ```
 
 ### Lokální vývoj
@@ -164,7 +164,7 @@ Server podporuje filtrování podle těchto kategorií:
 
 2. **Spuštění serveru:**
    ```bash
-   python main_http.py --host 0.0.0.0 --port 8807
+   python main_sse.py --host 0.0.0.0 --port 8807
    ```
 
 ## Konfigurace MCP klienta
@@ -175,10 +175,8 @@ Pro použití v MCP klientu (např. Cline) přidejte do konfigurace:
 {
   "mcpServers": {
     "awsblogs": {
-      "command": "docker",
-      "args": ["run", "-p", "8807:8807", "ghcr.io/mirecekd/awsblogs-mcp"],
-      "transport": "http",
-      "baseUrl": "http://localhost:8807"
+      "type": "sse",
+      "url": "http://localhost:8807/sse/"
     }
   }
 }
@@ -190,7 +188,7 @@ Server využívá veřejné API: `https://api.aws-news.com/articles`
 
 ## Funkce
 
-- ✅ HTTP transport na portu 8807
+- ✅ SSE transport na portu 8807
 - ✅ Filtrování podle typu článku (News/Blog)
 - ✅ Filtrování podle kategorie
 - ✅ Datové filtrování (rozsah datumů, dny zpět)
@@ -205,14 +203,14 @@ Server využívá veřejné API: `https://api.aws-news.com/articles`
 awsblogs-mcp/
 ├── src/awsblogs_mcp_server/
 │   ├── __init__.py
-│   ├── server_http.py          # HTTP MCP server
-│   └── data_processor.py       # API client a data processing
-├── main_http.py               # HTTP entry point
-├── Dockerfile.http            # Docker image pro HTTP
-├── docker-compose.yml         # Docker Compose konfigurace
-├── build.sh                   # Build script
-├── pyproject.toml             # Python projekt konfigurace
-└── README.md                  # Tento soubor
+│   ├── server_sse.py          # SSE MCP server
+│   └── data_processor.py      # API client a data processing
+├── main_sse.py               # SSE entry point
+├── Dockerfile.sse            # Docker image pro SSE
+├── docker-compose.yml        # Docker Compose konfigurace
+├── build.sh                  # Build script
+├── pyproject.toml            # Python projekt konfigurace
+└── README.md                 # Tento soubor
 ```
 
 ## Vývoj
@@ -221,7 +219,7 @@ Pro vývoj doporučujeme:
 
 1. Fork repository
 2. Vytvoření nové větve pro funkci
-3. Testování lokálně pomocí `python main_http.py`
+3. Testování lokálně pomocí `python main_sse.py`
 4. Testování Docker buildu pomocí `./build.sh`
 5. Vytvoření pull requestu
 

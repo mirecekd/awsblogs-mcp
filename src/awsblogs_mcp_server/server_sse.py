@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-AWS Blogs MCP Server - HTTP Version
-Provides tools for working with AWS Blog and News articles from api.aws-news.com via HTTP transport.
+AWS Blogs MCP Server - SSE Version
+Provides tools for working with AWS Blog and News articles from api.aws-news.com via SSE transport.
 """
 
 import argparse
@@ -14,7 +14,7 @@ from typing import Optional, Dict, Any, List
 from fastmcp import FastMCP
 from .data_processor import aws_news_api
 
-# Create MCP server with HTTP transport
+# Create MCP server with SSE transport
 mcp = FastMCP("AWS Blogs and News")
 
 class AWSBlogsError(Exception):
@@ -446,19 +446,19 @@ async def get_article_content(url: str) -> Dict[str, Any]:
 
 
 def main():
-    """Main function for running MCP server with HTTP transport"""
-    parser = argparse.ArgumentParser(description="AWS Blogs MCP Server - HTTP Version")
+    """Main function for running MCP server with SSE transport"""
+    parser = argparse.ArgumentParser(description="AWS Blogs MCP Server - SSE Version")
     parser.add_argument("--host", default="0.0.0.0", help="Host to bind to")
     parser.add_argument("--port", type=int, default=8807, help="Port to bind to")
     
     args = parser.parse_args()
     
-    print(f"AWS Blogs MCP Server (HTTP) initialized", file=sys.stderr)
+    print(f"AWS Blogs MCP Server (SSE) initialized", file=sys.stderr)
     print(f"Starting server on {args.host}:{args.port}", file=sys.stderr)
     print(f"API endpoint: https://api.aws-news.com/articles", file=sys.stderr)
     
-    # Start MCP server with HTTP transport
-    mcp.run(transport="http", host=args.host, port=args.port)
+    # Start MCP server with SSE transport
+    mcp.run(transport="sse", host=args.host, port=args.port)
 
 
 if __name__ == "__main__":
