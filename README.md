@@ -1,0 +1,210 @@
+# AWS Blogs MCP Server
+
+MCP server for working with AWS Blog and News articles from [api.aws-news.com](https://api.aws-news.com/articles).
+
+<div align="center">
+  
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/mirecekdg)
+
+</div>
+
+## Description
+
+This MCP server provides tools for retrieving and filtering AWS blog articles and news from all AWS categories. The server is built using the FastMCP framework and supports HTTP transport on port 8807.
+
+## Available MCP Tools
+
+### 1. `get_todays_posts`
+Gets articles published today.
+
+**Parameters:**
+- `post_type`: "News", "Blog", or "Both" (default)
+- `limit`: Maximum number of articles (default 20)
+
+### 2. `get_posts_by_date`
+Gets articles from a specific date range.
+
+**Parameters:**
+- `from_date`: From date in YYYY-MM-DD format (optional)
+- `to_date`: To date in YYYY-MM-DD format (optional)
+- `days_back`: Number of days back from today (alternative to from_date)
+- `post_type`: "News", "Blog", or "Both" (default)
+- `limit`: Maximum number of articles (default 50)
+
+### 3. `get_posts_by_category`
+Gets articles from a specific category.
+
+**Parameters:**
+- `category`: Category name (e.g., "Big Data", "Machine Learning", "Industries")
+- `post_type`: "News", "Blog", or "Both" (default)
+- `days_back`: Number of days back from today (default 30)
+- `limit`: Maximum number of articles (default 30)
+
+### 4. `search_posts`
+Searches articles by text query.
+
+**Parameters:**
+- `query`: Search query (searches in title, URL, and slug)
+- `post_type`: "News", "Blog", or "Both" (default)
+- `days_back`: Number of days back from today (default 90)
+- `limit`: Maximum number of articles (default 25)
+
+### 5. `get_categories`
+Gets a list of all available article categories.
+
+### 6. `get_latest_posts`
+Gets the latest articles.
+
+**Parameters:**
+- `post_type`: "News", "Blog", or "Both" (default)
+- `limit`: Maximum number of articles (default 20)
+- `days_back`: Number of days back from today (default 7)
+
+### 7. `get_popular_posts`
+Gets popular articles (marked as popular=true).
+
+**Parameters:**
+- `post_type`: "News", "Blog", or "Both" (default)
+- `days_back`: Number of days back from today (default 30)
+- `limit`: Maximum number of articles (default 15)
+
+### 8. `get_article_content`
+Downloads full article content from a given URL.
+
+**Parameters:**
+- `url`: Article URL (can be obtained from other tools)
+
+**Return values:**
+- `title`: Article title
+- `content`: Full article text
+- `description`: Meta description
+- `author`: Author (if available)
+- `published_date`: Publication date
+- `content_length`: Content length in characters
+- `word_count`: Word count
+
+## Available Categories
+
+The server supports filtering by these categories (and others):
+- Big Data
+- Machine Learning
+- Business Intelligence
+- Industries
+- Public Sector
+- Media
+- AWS News
+- Database
+- Migration and Modernization
+- Training & Certification
+- Open Source
+- AWS Partner Network
+- Integration & Automation
+- Messaging & Targeting
+- AWS Cloud Operations
+
+## Installation and Running
+
+### Docker (recommended)
+
+1. **Run from GitHub Container Registry:**
+   ```bash
+   docker run -p 8807:8807 ghcr.io/mirecekd/awsblogs-mcp
+   ```
+
+2. **Build Docker image locally:**
+   ```bash
+   chmod +x build.sh
+   ./build.sh
+   ```
+
+3. **Run using docker-compose:**
+   ```bash
+   docker-compose up awsblogs-mcp-http
+   ```
+
+4. **Or local Docker build:**
+   ```bash
+   docker run -p 8807:8807 awsblogs-mcp-server:http
+   ```
+
+### Local Development
+
+1. **Install dependencies:**
+   ```bash
+   pip install -e .
+   ```
+
+2. **Run server:**
+   ```bash
+   python main_http.py --host 0.0.0.0 --port 8807
+   ```
+
+## MCP Client Configuration
+
+To use in an MCP client (e.g., Cline), add to configuration:
+
+```json
+{
+  "mcpServers": {
+    "awsblogs": {
+      "command": "docker",
+      "args": ["run", "-p", "8807:8807", "ghcr.io/mirecekd/awsblogs-mcp"],
+      "transport": "http",
+      "baseUrl": "http://localhost:8807"
+    }
+  }
+}
+```
+
+## API Endpoint
+
+The server uses the public API: `https://api.aws-news.com/articles`
+
+## Features
+
+- ✅ HTTP transport on port 8807
+- ✅ Filter by article type (News/Blog)
+- ✅ Filter by category
+- ✅ Date filtering (date range, days back)
+- ✅ Text search
+- ✅ Cache mechanism (5 minutes)
+- ✅ Structured responses
+- ✅ Docker support
+
+## Project Structure
+
+```
+awsblogs-mcp/
+├── src/awsblogs_mcp_server/
+│   ├── __init__.py
+│   ├── server_http.py          # HTTP MCP server
+│   └── data_processor.py       # API client and data processing
+├── main_http.py               # HTTP entry point
+├── Dockerfile.http            # Docker image for HTTP
+├── docker-compose.yml         # Docker Compose configuration
+├── build.sh                   # Build script
+├── pyproject.toml             # Python project configuration
+└── README.md                  # This file
+```
+
+## Development
+
+For development we recommend:
+
+1. Fork the repository
+2. Create a new branch for the feature
+3. Test locally using `python main_http.py`
+4. Test Docker build using `./build.sh`
+5. Create a pull request
+
+## License
+
+MIT License - see LICENSE file.
+
+## Author
+
+Miroslav Dvořák (mirecekd@gmail.com)
+
+## Inspiration
+
+Project inspired by [aws-news-mcp-server](https://github.com/jritsema/aws-news-mcp-server) by jritsema.

@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  awsblogs-mcp-http:
+    build:
+      context: .
+      dockerfile: Dockerfile.http
+    container_name: awsblogs-mcp-server-http
+    ports:
+      - "8807:8807"
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+networks:
+  mcp-network:
+    driver: bridge
