@@ -19,6 +19,53 @@ class AWSNewsAPI:
     
     BASE_URL = "https://api.aws-news.com/articles"
     
+    # Available AWS blog categories
+    AVAILABLE_CATEGORIES = [
+        "Architecture",
+        "AWS Cloud Operations", 
+        "AWS for Games",
+        "AWS Insights",
+        "AWS Marketplace",
+        "AWS News",
+        "AWS Partner Network",
+        "AWS Smart Business",
+        "Big Data",
+        "Business Intelligence",
+        "Business Productivity",
+        "Cloud Enterprise Strategy",
+        "Cloud Financial Management",
+        "Compute",
+        "Contact Center",
+        "Containers",
+        "Database",
+        "Desktop & Application Streaming",
+        "Developer Tools",
+        "DevOps & Developer Productivity",
+        "Front-End Web & Mobile",
+        "HPC",
+        "IBM and Red Hat",
+        "Industries",
+        "Integration & Automation",
+        "Internet of Things",
+        "Machine Learning",
+        "Media",
+        "Messaging & Targeting",
+        "Microsoft Workloads on AWS",
+        "Migration and Modernization",
+        ".NET on AWS",
+        "Networking & Content Delivery",
+        "Open Source",
+        "Public Sector",
+        "Quantum Computing",
+        "SAP",
+        "Security",
+        "Spatial Computing",
+        "Startups",
+        "Storage",
+        "Supply Chain & Logistics",
+        "Training & Certification"
+    ]
+    
     def __init__(self):
         self._session: Optional[aiohttp.ClientSession] = None
         self._cache: Dict[str, Any] = {}

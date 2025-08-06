@@ -85,22 +85,50 @@ Stáhne plný obsah článku z daného URL.
 
 ## Dostupné kategorie
 
-Server podporuje filtrování podle těchto kategorií (a dalších):
-- Big Data
-- Machine Learning
-- Business Intelligence
-- Industries
-- Public Sector
-- Media
-- AWS News
-- Database
-- Migration and Modernization
-- Training & Certification
-- Open Source
-- AWS Partner Network
-- Integration & Automation
-- Messaging & Targeting
+Server podporuje filtrování podle těchto kategorií:
+- Architecture
 - AWS Cloud Operations
+- AWS for Games
+- AWS Insights
+- AWS Marketplace
+- AWS News
+- AWS Partner Network
+- AWS Smart Business
+- Big Data
+- Business Intelligence
+- Business Productivity
+- Cloud Enterprise Strategy
+- Cloud Financial Management
+- Compute
+- Contact Center
+- Containers
+- Database
+- Desktop & Application Streaming
+- Developer Tools
+- DevOps & Developer Productivity
+- Front-End Web & Mobile
+- HPC
+- IBM and Red Hat
+- Industries
+- Integration & Automation
+- Internet of Things
+- Machine Learning
+- Media
+- Messaging & Targeting
+- Microsoft Workloads on AWS
+- Migration and Modernization
+- .NET on AWS
+- Networking & Content Delivery
+- Open Source
+- Public Sector
+- Quantum Computing
+- SAP
+- Security
+- Spatial Computing
+- Startups
+- Storage
+- Supply Chain & Logistics
+- Training & Certification
 
 ## Instalace a spuštění
 
