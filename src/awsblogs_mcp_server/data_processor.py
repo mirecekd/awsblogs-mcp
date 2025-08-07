@@ -83,35 +83,44 @@ class AWSNewsAPI:
         if self._session and not self._session.closed:
             await self._session.close()
     
-    async def fetch_articles(self, limit: Optional[int] = None) -> List[Dict[str, Any]]:
+    async def fetch_articles(self, limit: Optional[int] = None, search_query: Optional[str] = None) -> List[Dict[str, Any]]:
         """
         Downloads articles from AWS News API
         
         Args:
             limit: Maximum number of articles (None = all available)
+            search_query: Search query for API filtering
             
         Returns:
             List of articles
         """
-        # Check cache
+        # For search queries, always fetch fresh data (don't use cache)
         current_time = datetime.now()
-        if (self._last_fetch and 
-            (current_time - self._last_fetch).seconds < self._cache_timeout and
-            'articles' in self._cache):
-            articles = self._cache['articles']
+        cache_key = f"articles_{search_query or 'all'}"
+        
+        if (search_query is None and self._last_fetch and 
+            (current_time - self._last_fetch).total_seconds() < self._cache_timeout and
+            cache_key in self._cache):
+            articles = self._cache[cache_key]
         else:
+            # Build URL with search parameter if provided
+            url = self.BASE_URL
+            if search_query:
+                url += f"?search={search_query}"
+            
             # Download new data
             session = await self._get_session()
             
             try:
-                async with session.get(self.BASE_URL) as response:
+                async with session.get(url) as response:
                     if response.status == 200:
                         data = await response.json()
                         articles = data.get('articles', [])
                         
                         # Save to cache
-                        self._cache['articles'] = articles
-                        self._last_fetch = current_time
+                        self._cache[cache_key] = articles
+                        if search_query is None:
+                            self._last_fetch = current_time
                     else:
                         raise Exception(f"API error: {response.status}")
             except Exception as e:

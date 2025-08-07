@@ -203,10 +203,10 @@ async def search_posts(
     limit: int = 25
 ) -> Dict[str, Any]:
     """
-    Searches articles by text query.
+    Searches articles by text query using AWS News API search functionality.
     
     Args:
-        query: Search query (searches in title, URL, and slug)
+        query: Search query (searches in title, URL, and content via API)
         post_type: Post type - "News", "Blog", or "Both" (default)
         days_back: Number of days back from today (default 90)
         limit: Maximum number of articles (default 25)
@@ -223,17 +223,17 @@ async def search_posts(
                 "total_count": 0
             }
         
-        # Download all articles
-        all_articles = await aws_news_api.fetch_articles()
+        # Use API search functionality with the query
+        search_results = await aws_news_api.fetch_articles(search_query=query)
         
-        # Filter by date range
-        date_filtered = aws_news_api.filter_by_date_range(all_articles, days_back=days_back)
-        
-        # Search by query
-        search_filtered = aws_news_api.search_articles(date_filtered, query)
+        # Filter by date range if specified
+        if days_back and days_back > 0:
+            date_filtered = aws_news_api.filter_by_date_range(search_results, days_back=days_back)
+        else:
+            date_filtered = search_results
         
         # Filter by type
-        type_filtered = aws_news_api.filter_by_type(search_filtered, post_type)
+        type_filtered = aws_news_api.filter_by_type(date_filtered, post_type)
         
         # Apply limit
         if limit > 0:
@@ -243,7 +243,8 @@ async def search_posts(
             "query": query,
             "post_type": post_type,
             "days_back": days_back,
-            "limit": limit
+            "limit": limit,
+            "search_method": "api_search"
         }
         
         return aws_news_api.format_article_response(type_filtered, filters_applied)
