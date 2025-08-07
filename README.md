@@ -10,7 +10,15 @@ MCP server for working with AWS Blog and News articles from [api.aws-news.com](h
 
 ## Description
 
-This MCP server provides tools for retrieving and filtering AWS blog articles and news from all AWS categories. The server is built using the FastMCP framework and supports SSE transport on port 8807.
+This MCP server provides tools for retrieving and filtering AWS blog articles and news from all AWS categories. The server is built using the FastMCP framework, is fully asynchronous (async/await), and supports SSE transport on port 8807. Data is fetched from the public API and processed using aiohttp and BeautifulSoup.
+
+## Architecture
+
+- **Entrypoint:** `main_sse.py` – sets up the environment and starts the server.
+- **Server:** `src/awsblogs_mcp_server/server_sse.py` – defines all MCP tools, handles argument parsing, and runs the FastMCP server.
+- **Data Processor:** `src/awsblogs_mcp_server/data_processor.py` – handles API communication, filtering, caching, and HTML parsing.
+- **Caching:** In-memory cache (5 minutes) for article lists (except search queries, which always fetch fresh data).
+- **Validation:** Input parameters are validated for type, presence, and (where relevant) format. Only AWS articles (aws.amazon.com) are supported for full content download.
 
 ## Available MCP Tools
 
@@ -41,13 +49,15 @@ Gets articles from a specific category.
 - `limit`: Maximum number of articles (default 30)
 
 ### 4. `search_posts`
-Searches articles by text query.
+Searches articles by text query using the API's search functionality (searches in title, URL, and slug).
 
 **Parameters:**
 - `query`: Search query (searches in title, URL, and slug)
 - `post_type`: "News", "Blog", or "Both" (default)
 - `days_back`: Number of days back from today (default 90)
 - `limit`: Maximum number of articles (default 25)
+
+**Note:** Search queries always fetch fresh data and do not use cache.
 
 ### 5. `get_categories`
 Gets a list of all available article categories.
@@ -72,7 +82,7 @@ Gets popular articles (marked as popular=true).
 Downloads full article content from a given URL.
 
 **Parameters:**
-- `url`: Article URL (can be obtained from other tools)
+- `url`: Article URL (must be from aws.amazon.com)
 
 **Return values:**
 - `title`: Article title
@@ -82,6 +92,8 @@ Downloads full article content from a given URL.
 - `published_date`: Publication date
 - `content_length`: Content length in characters
 - `word_count`: Word count
+
+**Note:** Only AWS articles (aws.amazon.com) are supported for full content download.
 
 ## Available Categories
 
@@ -129,6 +141,12 @@ The server supports filtering by these categories:
 - Storage
 - Supply Chain & Logistics
 - Training & Certification
+
+## Caching
+
+- Article lists are cached in memory for 5 minutes (except for search queries).
+- Search queries always fetch fresh data from the API.
+- Cache is invalidated automatically after timeout or when parameters change.
 
 ## Installation and Running
 
@@ -192,10 +210,12 @@ The server uses the public API: `https://api.aws-news.com/articles`
 - ✅ Filter by article type (News/Blog)
 - ✅ Filter by category
 - ✅ Date filtering (date range, days back)
-- ✅ Text search
-- ✅ Cache mechanism (5 minutes)
+- ✅ Text search (API-powered)
+- ✅ Cache mechanism (5 minutes, except for search)
 - ✅ Structured responses
 - ✅ Docker support
+- ✅ Asynchronous architecture (aiohttp, FastMCP)
+- ✅ HTML parsing with BeautifulSoup
 
 ## Project Structure
 
@@ -203,14 +223,17 @@ The server uses the public API: `https://api.aws-news.com/articles`
 awsblogs-mcp/
 ├── src/awsblogs_mcp_server/
 │   ├── __init__.py
-│   ├── server_sse.py          # SSE MCP server
-│   └── data_processor.py      # API client and data processing
+│   ├── server_sse.py          # SSE MCP server (tools, server logic)
+│   └── data_processor.py      # API client, filtering, caching, HTML parsing
 ├── main_sse.py               # SSE entry point
 ├── Dockerfile.sse            # Docker image for SSE
 ├── docker-compose.yml        # Docker Compose configuration
 ├── build.sh                  # Build script
 ├── pyproject.toml            # Python project configuration
-└── README.md                 # This file
+├── README.md                 # This file
+└── assets/
+    ├── aws_blogs.png
+    └── n8n-workflow.json
 ```
 
 ## Development

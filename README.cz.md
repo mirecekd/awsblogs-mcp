@@ -10,7 +10,15 @@ MCP server pro práci s AWS Blog a News články z [api.aws-news.com](https://ap
 
 ## Popis
 
-Tento MCP server poskytuje nástroje pro získávání a filtrování AWS blogových článků a news ze všech AWS kategorií. Server je vytvořen pomocí FastMCP frameworku a podporuje SSE transport na portu 8807.
+Tento MCP server poskytuje nástroje pro získávání a filtrování AWS blogových článků a novinek ze všech AWS kategorií. Server je postaven na frameworku FastMCP, je plně asynchronní (async/await) a podporuje SSE transport na portu 8807. Data jsou získávána z veřejného API a zpracovávána pomocí aiohttp a BeautifulSoup.
+
+## Architektura
+
+- **Entrypoint:** `main_sse.py` – nastavuje prostředí a spouští server.
+- **Server:** `src/awsblogs_mcp_server/server_sse.py` – definuje všechny MCP nástroje, zpracovává argumenty a spouští FastMCP server.
+- **Data Processor:** `src/awsblogs_mcp_server/data_processor.py` – zajišťuje komunikaci s API, filtrování, cachování a HTML parsing.
+- **Cache:** In-memory cache (5 minut) pro seznamy článků (kromě vyhledávání, které vždy stahuje čerstvá data).
+- **Validace:** Vstupní parametry jsou validovány na typ, přítomnost a (kde je relevantní) formát. Plné stažení obsahu je podporováno pouze pro AWS články (aws.amazon.com).
 
 ## Dostupné MCP nástroje
 
@@ -41,13 +49,15 @@ Získá články z konkrétní kategorie.
 - `limit`: Maximální počet článků (výchozí 30)
 
 ### 4. `search_posts`
-Vyhledá články podle textového dotazu.
+Vyhledá články podle textového dotazu pomocí API (hledá v názvu, URL a slug).
 
 **Parametry:**
-- `query`: Vyhledávací dotaz (hledá se v názvu, URL a slug)
+- `query`: Vyhledávací dotaz (hledá v názvu, URL a slug)
 - `post_type`: "News", "Blog", nebo "Both" (výchozí)
 - `days_back`: Počet dní zpět od dneška (výchozí 90)
 - `limit`: Maximální počet článků (výchozí 25)
+
+**Poznámka:** Vyhledávací dotazy vždy stahují čerstvá data a nevyužívají cache.
 
 ### 5. `get_categories`
 Získá seznam všech dostupných kategorií článků.
@@ -72,7 +82,7 @@ Získá populární články (označené jako popular=true).
 Stáhne plný obsah článku z daného URL.
 
 **Parametry:**
-- `url`: URL článku (lze získat z ostatních nástrojů)
+- `url`: URL článku (musí být z aws.amazon.com)
 
 **Návratové hodnoty:**
 - `title`: Titulek článku
@@ -82,6 +92,8 @@ Stáhne plný obsah článku z daného URL.
 - `published_date`: Datum publikace
 - `content_length`: Délka obsahu v znacích
 - `word_count`: Počet slov
+
+**Poznámka:** Plné stažení obsahu je podporováno pouze pro AWS články (aws.amazon.com).
 
 ## Dostupné kategorie
 
@@ -129,6 +141,12 @@ Server podporuje filtrování podle těchto kategorií:
 - Storage
 - Supply Chain & Logistics
 - Training & Certification
+
+## Cache
+
+- Seznamy článků jsou cachovány v paměti po dobu 5 minut (kromě vyhledávání).
+- Vyhledávací dotazy vždy stahují čerstvá data z API.
+- Cache se automaticky invaliduje po timeoutu nebo při změně parametrů.
 
 ## Instalace a spuštění
 
@@ -192,10 +210,12 @@ Server využívá veřejné API: `https://api.aws-news.com/articles`
 - ✅ Filtrování podle typu článku (News/Blog)
 - ✅ Filtrování podle kategorie
 - ✅ Datové filtrování (rozsah datumů, dny zpět)
-- ✅ Textové vyhledávání
-- ✅ Cache mechanismus (5 minut)
+- ✅ Textové vyhledávání (přes API)
+- ✅ Cache mechanismus (5 minut, kromě vyhledávání)
 - ✅ Strukturované odpovědi
 - ✅ Docker podpora
+- ✅ Asynchronní architektura (aiohttp, FastMCP)
+- ✅ HTML parsing pomocí BeautifulSoup
 
 ## Struktura projektu
 
@@ -203,14 +223,17 @@ Server využívá veřejné API: `https://api.aws-news.com/articles`
 awsblogs-mcp/
 ├── src/awsblogs_mcp_server/
 │   ├── __init__.py
-│   ├── server_sse.py          # SSE MCP server
-│   └── data_processor.py      # API client a data processing
+│   ├── server_sse.py          # SSE MCP server (nástroje, serverová logika)
+│   └── data_processor.py      # API klient, filtrování, cache, HTML parsing
 ├── main_sse.py               # SSE entry point
 ├── Dockerfile.sse            # Docker image pro SSE
 ├── docker-compose.yml        # Docker Compose konfigurace
 ├── build.sh                  # Build script
 ├── pyproject.toml            # Python projekt konfigurace
-└── README.md                 # Tento soubor
+├── README.md                 # Anglická dokumentace
+└── assets/
+    ├── aws_blogs.png
+    └── n8n-workflow.json
 ```
 
 ## Vývoj
