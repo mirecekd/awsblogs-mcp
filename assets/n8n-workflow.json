@@ -17,7 +17,7 @@
     {
       "parameters": {
         "options": {
-          "systemMessage": "You are a helpful assistant who help user with AWS Blogs and News. Always display links as full URLs."
+          "systemMessage": "=You are a helpful assistant who help user with AWS Blogs and News. Always display links as full URLs.\nToday is {{ $now.format('cccc') }}, {{ $now.format('yyyy-MM-dd HH:mm') }}.\n"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -62,7 +62,7 @@
     },
     {
       "parameters": {
-        "endpointUrl": "http://192.168.192.81:8807/sse",
+        "endpointUrl": "http://localhost:8807/sse",
         "include": "selected"
       },
       "type": "@n8n/n8n-nodes-langchain.mcpClientTool",

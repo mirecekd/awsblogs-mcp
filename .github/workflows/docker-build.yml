@@ -3,8 +3,18 @@ name: Build and Push Docker Image
 on:
   push:
     branches: [ main, master ]
+    paths:
+      - '**/*.py'
+      - 'pyproject.toml'
+      - 'Dockerfile.sse'
+      - 'requirements.txt'
   pull_request:
     branches: [ main, master ]
+    paths:
+      - '**/*.py'
+      - 'pyproject.toml'
+      - 'Dockerfile.sse'
+      - 'requirements.txt'
 
 env:
   REGISTRY: ghcr.io
